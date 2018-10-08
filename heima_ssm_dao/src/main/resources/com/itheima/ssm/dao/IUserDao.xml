@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.dao.IUserDao">
+    <!--安全框架指定的登陆用户名密码认证。userService的方法-->
+    <select id="findByUsername" resultMap="userMap" parameterType="String">
+        select * from users where username=#{username}
+    </select>
+   <resultMap id="userMap" type="userInfo">
+       <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="email" property="email"></result>
+        <result column="password" property="password"></result>
+        <result column="phoneNum" property="phoneNum"></result>
+        <result column="status" property="status"></result>
+        <collection property="roles" column="id" ofType="role" select="com.itheima.ssm.dao.IRoleDao.findRoleByUserId"></collection>
+   </resultMap>
+
+
+
+    <select id="findAll" resultType="userInfo">
+        select * from users
+    </select>
+
+    <insert id="sava" parameterType="userInfo">
+        insert into users(email,username,password,phoneNum,status) values(#{email},#{username},#{password},#{phoneNum},#{status})
+    </insert>
+
+    <!--List<UserInfo> findById(String id);-->
+    <select id="findById" parameterType="String" resultMap="userByIdMap">
+        select * from users where id=#{id}
+    </select>
+    <resultMap id="userByIdMap" type="userInfo">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="email" property="email"></result>
+        <result column="password" property="password"></result>
+        <result column="phoneNum" property="phoneNum"></result>
+        <result column="status" property="status"></result>
+        <collection property="roles" column="id" ofType="role" select="com.itheima.ssm.dao.IRoleDao.findRoleByUserId"></collection>
+    </resultMap>
+
+
+    <!--List<Role> findOtherRoles(UserInfo userInfo);-->
+    <!--查询指定user不包含的所有roles-->
+    <select id="findOtherRoles" parameterType="userInfo" resultType="role">
+        select * from role where id not in (select roleId from users_role where userId=#{id})
+    </select>
+
+
+    <!--void addOneRoleToUser(String userId, String id);-->
+    <!--添加指定id的角色到指定用户-->
+    <insert id="addOneRoleToUser">
+        insert into users_role values (#{userId},#{roleId})
+    </insert>
+</mapper>

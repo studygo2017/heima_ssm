@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.dao.IOrdersDao">
+    <select id="findAll" resultMap="OrdersMap">
+        select * from orders
+    </select>
+
+    <resultMap id="OrdersMap" type="orders">
+       <!-- <id property="id" column="id" />
+        <result property="orderNum" column="orderNum"/>
+        <result property="orderTime" column="orderTime"/>
+        <result property="orderStatus" column="orderStatus"/>-->
+        
+        <association property="product" javaType="product"
+                     select="com.itheima.ssm.dao.IProductDao.findById"
+                     column="productId">
+        </association>
+    </resultMap>
+
+    <select id="findById" resultMap="OneMap" parameterType="String">
+        select * from orders where id=#{id}
+    </select>
+
+    <!--@Result(id=true,column = "id",property = "id"),
+    @Result(column = "orderNum",property = "orderNum"),
+    @Result(column = "orderTime",property = "orderTime"),
+    @Result(column = "orderStatus",property = "orderStatus"),
+    @Result(column = "peopleCount",property = "peopleCount"),
+    @Result(column = "payType",property = "payType"),
+    @Result(column = "orderDesc",property = "orderDesc"),-->
+
+    <resultMap id="OneMap" type="orders">
+        <id property="id" column="id"></id>
+        <result property="orderTime" column="orderTime"></result>
+        <result property="orderNum" column="orderNum"></result>
+        <result property="orderStatus" column="orderStatus"></result>
+        <result property="peopleCount" column="peopleCount"></result>
+        <result property="orderDesc" column="orderDesc"></result>
+        <association property="product" javaType="product"
+                     select="com.itheima.ssm.dao.IProductDao.findById"
+                     column="productId">
+        </association>
+
+
+        <association property="member" javaType="member"
+            select="com.itheima.ssm.dao.IMemberDao.findById"
+                     column="memberId">
+        </association>
+
+        <collection property="travellers" ofType="traveller"
+                    select="com.itheima.ssm.dao.ITravellerDao.findAll" column="id">
+        </collection>
+
+    </resultMap>
+</mapper>

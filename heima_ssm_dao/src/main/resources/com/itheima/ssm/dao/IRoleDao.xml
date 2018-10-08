@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.dao.IRoleDao">
+
+    <select id="findRoleByUserId" parameterType="String" resultMap="roleMap">
+        select * from role where id in ( select roleId from users_role where userId=#{id})
+    </select>
+    <resultMap id="roleMap" type="role">
+        <collection column="id" property="permissions"
+                    ofType="permission" select="com.itheima.ssm.dao.IPermissionDao.findByRoleId"></collection>
+    </resultMap>
+    <!--user/findById.do...userInfo。。。UserInfo{id='5BADB9A78A9C4DD3B584EDA51B63ADF0', username='huang', email='18971390188@itcast.com', password='$2a$10$JI8d7la3QrnSwR2xGjJ9zudXpMouBpIx2yaO1dSB8LTLArjaOHlF6', phoneNum='18971390188', status=1, statusStr='null', roles=[]}-->
+
+
+    <!--public List<Role> findAll()-->
+    <select id="findAll" resultType="role">
+        select * from role
+    </select>
+
+
+    <!--public void sava(String roleName, String roleDesc);-->
+    <insert id="sava">
+        insert into role(roleName,roleDesc) values (#{roleName},#{roleDesc})
+    </insert>
+
+
+    <!--public Role findById(String id);-->
+    <select id="findById" resultType="role" parameterType="String">
+        select * from role where id=#{id}
+    </select>
+
+
+    <!--List<Permission> findOtherPermissions(Role role);-->
+    <select id="findOtherPermissions" parameterType="role" resultType="permission">
+        select * from permission where id not in (select permissionId from role_permission where roleId=#{id})
+    </select>
+
+
+    <!--void addOnePermission(String roleId, String id);-->
+    <insert id="addOnePermission">
+        insert into role_permission (roleId,permissionId) values (#{roleId},#{permissionId})
+    </insert>
+</mapper>
